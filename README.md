@@ -5,9 +5,38 @@ the concrete-first method, source fidelity, retrieval, evidence-based progress,
 linked HTML lessons, grayscale source-note explainers and flashcards. It contains
 no original course notes, textbooks, learner history or subject-specific lessons.
 
+## Install Codex first
+
+Download or clone this repository and extract it if you downloaded a ZIP. Use the
+installer for your operating system before starting a subject:
+
+- **macOS:** open Terminal, change to this repository's folder (for example,
+  `cd ~/Downloads/LearningSystem`), then run [install-codex.sh](install-codex.sh):
+
+  ```sh
+  bash install-codex.sh
+  ```
+
+- **Windows:** double-click [install-codex.bat](install-codex.bat) in File Explorer.
+  You can also open PowerShell in this repository's folder and run:
+
+  ```powershell
+  .\install-codex.bat
+  ```
+
+Run the installer from your normal user account, without `sudo` or **Run as
+administrator**. Follow its prompts to install Codex and sign in. Internet access
+is required; the scripts keep an existing working Codex installation.
+
+The installers create a separate `Codex-Workshop` folder and offer to open Codex
+there. To use this study kit, continue with the steps below and launch Codex inside
+your new subject folder. If `codex` is not found after installation, close and
+reopen your terminal.
+
 ## Start a subject
 
-Keep this folder as a clean kit. From inside it, run:
+Keep this folder as a clean kit. With Python 3.9+ installed, run this from inside
+it (on Windows, use `python` if `python3` is unavailable):
 
 ```sh
 python3 scripts/study.py init ../economics-study --subject "Economics"
@@ -19,7 +48,15 @@ coverage records and empty study folders, and leaves the original kit unchanged.
 It works from an initialized subject too: it **does not copy that subject's
 sources, learning records or progress** into the next subject.
 
-Open the new folder in your assistant and say:
+Then launch Codex from the new folder:
+
+```sh
+cd ../economics-study
+codex
+```
+
+The new folder includes `AGENTS.md` and the skills in `.agents/skills/`; no separate
+global skill installation is needed. In Codex, say:
 
 > Read AGENTS.md and the bundled skills. I want to study [topic] for [goal].
 > My sources are [files/links]. Help me agree the scope, locate my current level,
