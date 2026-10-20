@@ -5,9 +5,43 @@ the concrete-first method, source fidelity, retrieval, evidence-based progress,
 linked HTML lessons, grayscale source-note explainers and flashcards. It contains
 no original course notes, textbooks, learner history or subject-specific lessons.
 
+## Set up the workshop
+
+Install Git separately if it is not already available. On macOS, run
+`xcode-select --install` in Terminal and complete the Apple prompt. On Windows,
+install Git from [git-scm.com](https://git-scm.com/install/windows) or run
+`winget install --id Git.Git -e --source winget` in PowerShell. Git is needed to
+clone the repository; the setup scripts below do not install Git.
+
+Clone this repository:
+
+```sh
+git clone https://github.com/AlMashreqi/LearningSystem.git
+cd LearningSystem
+```
+
+Then run the one setup script for your system:
+
+- **macOS:** run [install-workshop.sh](install-workshop.sh) with `bash install-workshop.sh`.
+- **Windows:** double-click [install-workshop.bat](install-workshop.bat), or run
+  `.\install-workshop.bat` from PowerShell.
+
+The setup script installs Python 3.9+ and then Codex, keeping working
+installations. If Python is missing, it installs Python 3.13.16 from Python.org;
+Codex comes from the official OpenAI installer. Run the script from your normal
+user account; do not use `sudo` or **Run as administrator**. Internet access is
+required.
+
+On macOS, the Python installer opens its standard installer window. Complete it
+and return to the setup terminal. The setup creates a `Codex-Workshop` folder and
+offers to open Codex there. To use repo-specific instructions and skills, launch
+Codex from your new subject folder as described below.
+
 ## Start a subject
 
-Keep this folder as a clean kit. From inside it, run:
+Keep this folder as a clean kit. Python 3.9+ is required for the study commands.
+After running the workshop setup, run this from inside the kit (on Windows, use
+`python` if `python3` is unavailable):
 
 ```sh
 python3 scripts/study.py init ../economics-study --subject "Economics"
@@ -19,7 +53,15 @@ coverage records and empty study folders, and leaves the original kit unchanged.
 It works from an initialized subject too: it **does not copy that subject's
 sources, learning records or progress** into the next subject.
 
-Open the new folder in your assistant and say:
+Then launch Codex from the new folder:
+
+```sh
+cd ../economics-study
+codex
+```
+
+The new folder includes `AGENTS.md` and the skills in `.agents/skills/`; no separate
+global skill installation is needed. In Codex, say:
 
 > Read AGENTS.md and the bundled skills. I want to study [topic] for [goal].
 > My sources are [files/links]. Help me agree the scope, locate my current level,
@@ -40,6 +82,7 @@ AGENTS.md / agent.md        Agent instructions and alternate entry point
 assets/                    Shared styling, retrieval quiz, statement hover previews
 templates/                 Workspace records, lesson, recall, reference, TeX, cards
 scripts/study.py            Init, HTML checks, Anki export, PDF compilation
+install-workshop.sh/.bat    Python and Codex setup for macOS and Windows
 tests/                     Standard-library regression tests
 evals/                     Cross-subject prompts for optional teaching review
 ```
