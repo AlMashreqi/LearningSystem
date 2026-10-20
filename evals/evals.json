@@ -1,0 +1,24 @@
+{
+  "skill_name": "study-workflow",
+  "status": "manual scenarios; no model benchmark has been run",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I'm revising macroeconomics. My lecture notes cover nominal and real GDP, and the textbook section is supplied. I keep mixing them up. Teach me this section, not the next chapter. Use a specific numerical economy first.",
+      "expected_output": "Read supplied section; start with real quantities/prices, label terms, distinguish current/base-year prices, explain before one practice question, preserve source scope and cite only verified content. Do not claim repair before an answer.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I want to self-study history, not prepare for an exam. Help me understand the difference between a primary source and a historian's interpretation. I haven't chosen a book or time period yet.",
+      "expected_output": "Do not invent an exam or lecturer. Use a concrete passage/case, distinguish evidence from interpretation without forcing numerical examples, ask one relevant scope question if needed, and avoid an oversized course plan.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "I'm returning to a programming course. Lessons 0001–0004 have been written but I haven't answered any quizzes. Lecture 3 was missed; its notes are borrowed. Export printable explainers for the two original note files and add a lesson which uses a rule from 0002.",
+      "expected_output": "Treat proficiency as unknown and borrowed notes as scope only. Produce two grayscale note explainers, not four lesson PDFs; no textbook quotations there. Verify the prior rule in the actual source lesson, quote it fully in an anchored recall box and simplify any assessed quote in the HTML lesson. If required files are unavailable, request them rather than inventing content.",
+      "files": []
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lesson {{NUMBER}} — {{TITLE}}</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<main class="wrap">
+  <header class="masthead">
+    <p class="eyebrow">Lesson {{NUMBER}} · {{SOURCE_ITEMS_SECTION_PAGES}}</p>
+    <h1>{{TITLE}}</h1>
+    <p class="standfirst">{{THE_ONE_ATTAINABLE_WIN}}</p>
+  </header>
+
+  <!-- Include relevant prior recall here only when there is genuine prior work. -->
+  <section aria-labelledby="concrete-case">
+    <h2 id="concrete-case">Start with a real case</h2>
+    <p>{{FULLY_WORKED_CONCRETE_EXAMPLE_WITH_DEFINED_TERMS}}</p>
+    <p>{{SECOND_CASE_WITH_A_USEFUL_VARIATION}}</p>
+  </section>
+
+  <section aria-labelledby="general-idea">
+    <h2 id="general-idea">What the cases have in common</h2>
+    <!-- For an assessed exact statement; otherwise replace with original prose. -->
+    <blockquote class="sourcequote" id="{{STABLE_STATEMENT_ID}}">
+      <p>{{VERIFIED_EXACT_STATEMENT_INCLUDING_ALL_CONDITIONS}}</p>
+      <cite>{{SOURCE_TITLE_EDITION_SECTION_PRINTED_PAGE}}</cite>
+    </blockquote>
+    <div class="plain">
+      <p class="box-label">In plain words</p>
+      <p>{{GENUINE_BEGINNER_EXPLANATION_WITH_A_CONCRETE_LINK}}</p>
+    </div>
+    <p>{{REASONING_OR_PROOF_EXPLAINED_STEP_BY_STEP}}</p>
+    <!-- At each use of a prior fact, add the complete block from recall.html. -->
+    <div class="box disc">
+      <p class="box-label">Tell the neighbours apart</p>
+      <p>{{NEARBY_IDEAS_WHAT_EACH_ANSWERS_AND_THE_TEST_THAT_SEPARATES_THEM}}</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="retrieval">
+    <h2 id="retrieval">Retrieve without looking back</h2>
+    <details>
+      <summary>{{FREE_RECALL_OR_TRANSFER_QUESTION}}</summary>
+      <p>{{ANSWER_AND_REASONING}}</p>
+    </details>
+    <div class="quiz" data-quiz>
+      <div class="q" data-answer="0">
+        <p class="q-stem">{{DISTINGUISHING_CASE_QUESTION}}</p>
+        <div class="opts">
+          <button class="opt" type="button" data-fb="{{SPECIFIC_CORRECT_REASON}}">{{CORRECT_OPTION}}</button>
+          <button class="opt" type="button" data-fb="{{SPECIFIC_MISCONCEPTION_AND_FIX}}">{{PLAUSIBLE_WRONG_OPTION}}</button>
+        </div>
+        <p class="fb" aria-live="polite"></p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <p>{{SHORT_SUMMARY_AND_WHAT_IS_NEXT}}</p>
+    <p><a href="../reference/{{REFERENCE_FILENAME}}.html">Keep the reference aid</a></p>
+    <p class="ask">Share your answers to check understanding. This page does not record progress automatically.</p>
+  </footer>
+</main>
+<script src="../assets/quiz.js"></script>
+<script src="../assets/ref-preview.js"></script>
+</body>
+</html>

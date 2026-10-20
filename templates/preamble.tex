@@ -1,0 +1,147 @@
+% ============================================================
+% Shared preamble --- source-note explainers for any subject.
+% One document per original note file, not per generated lesson.
+% Black / white / gray only. No quoted textbook text.
+% Consult the chosen content authority, then explain in original words.
+% \input this at the top of every document's .tex file.
+% Check package availability on the destination machine with kpsewhich.
+% No dependency on enumitem, tcolorbox, mdframed or titlesec.
+% ============================================================
+
+\usepackage[a4paper,margin=2.2cm]{geometry}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{microtype}
+\usepackage{tikz}
+\usepackage{fancyhdr}
+\usepackage[colorlinks=true,linkcolor=black,urlcolor=black,citecolor=black]{hyperref}
+
+% ---------- palette: black / white / gray only ----------
+\definecolor{ink}{gray}{0}
+\definecolor{gy1}{gray}{0.94}   % lightest fill
+\definecolor{gy2}{gray}{0.85}   % medium fill
+\definecolor{gy3}{gray}{0.55}   % rule / label gray
+\definecolor{gy4}{gray}{0.35}   % darker label
+
+% ---------- header/footer ----------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyfoot[C]{\small\color{gy3}\thepage}
+
+% ---------- section styling (no titlesec available) ----------
+\makeatletter
+\renewcommand{\section}{\@startsection{section}{1}{0pt}%
+  {1.4em plus 1em minus 0.4em}{0.7em}%
+  {\normalfont\Large\bfseries\color{black}}}
+\renewcommand{\subsection}{\@startsection{subsection}{2}{0pt}%
+  {1.1em plus 0.8em minus 0.3em}{0.5em}%
+  {\normalfont\large\bfseries\color{black!80}}}
+\makeatother
+
+% ---------- box primitive: solid left rule + fill, via tikz ----------
+\newcommand{\rulebox}[4]{%
+  % #1 = fill gray, #2 = rule gray, #3 = label (or empty), #4 = content
+  \par\noindent
+  \begin{tikzpicture}
+    \node[fill=#1, text width=\dimexpr\linewidth-24pt\relax,
+          inner sep=8pt, anchor=north west,
+          rounded corners=1.5pt] (box) at (0,0) {%
+      \begin{minipage}{\dimexpr\linewidth-24pt\relax}
+        \ifx&#3&\else{\small\bfseries\color{#2}\MakeUppercase{#3}}\\[3pt]\fi
+        \raggedright #4
+      \end{minipage}%
+    };
+    \draw[#2, line width=2.4pt] (box.north west) -- (box.south west);
+  \end{tikzpicture}
+  \par\vspace{0.5em}
+}
+
+% dashed-left-rule variant --- marks a place where the lecture notes were
+% incomplete and this content fills the gap
+\newcommand{\fillbox}[2]{%
+  % #1 = label, #2 = content
+  \par\noindent
+  \begin{tikzpicture}
+    \node[fill=gy1, text width=\dimexpr\linewidth-24pt\relax,
+          inner sep=8pt, anchor=north west,
+          rounded corners=1.5pt] (box) at (0,0) {%
+      \begin{minipage}{\dimexpr\linewidth-24pt\relax}
+        {\small\bfseries\color{ink}\MakeUppercase{#1}}\\[3pt]
+        \raggedright #2
+      \end{minipage}%
+    };
+    \draw[ink, line width=2.4pt, dash pattern=on 5pt off 3pt] (box.north west) -- (box.south west);
+  \end{tikzpicture}
+  \par\vspace{0.5em}
+}
+
+% Plain explanation box --- the default unit of this document: your notes,
+% explained in full, in plain words. Light gray fill, solid black rule.
+\newcommand{\notebox}[2]{%
+  \rulebox{gy1}{black}{#1}{#2}
+}
+
+% Worked example box --- an example problem, in the source's style but
+% written fresh, never quoted. Boxed all the way round rather than ruled,
+% so it visually reads as "try this yourself" material.
+\newcommand{\examplebox}[2]{%
+  % #1 = title, #2 = content
+  \par\noindent
+  \begin{tikzpicture}
+    \node[draw=ink, line width=0.9pt, fill=white,
+          text width=\dimexpr\linewidth-24pt\relax,
+          inner sep=9pt, anchor=north west,
+          rounded corners=2pt] (box) at (0,0) {%
+      \begin{minipage}{\dimexpr\linewidth-24pt\relax}
+        {\small\bfseries\color{ink} EXAMPLE --- #1}\\[4pt]
+        \raggedright #2
+      \end{minipage}%
+    };
+  \end{tikzpicture}
+  \par\vspace{0.5em}
+}
+
+% Key-rule box --- the one thing to remember. Inverted: dark fill, white text.
+\newcommand{\keybox}[1]{%
+  \par\noindent
+  \begin{tikzpicture}
+    \node[fill=gy4, text=white, text width=\dimexpr\linewidth-24pt\relax,
+          inner sep=9pt, anchor=north west,
+          rounded corners=2pt] (box) at (0,0) {%
+      \begin{minipage}{\dimexpr\linewidth-24pt\relax}
+        \color{white}\raggedright #1
+      \end{minipage}%
+    };
+  \end{tikzpicture}
+  \par\vspace{0.5em}
+}
+
+% Correction / warning box --- your notes state something that needs fixing
+\newcommand{\warnbox}[2]{%
+  \rulebox{gy2}{black}{#1}{#2}
+}
+
+% ---------- matrix helper ----------
+\newcommand{\bmat}[1]{\left(\begin{matrix}#1\end{matrix}\right)}
+
+% ---------- self-check Q&A (static, answer revealed below a rule) ----------
+\newcounter{qnum}
+\newenvironment{selfcheck}{\setcounter{qnum}{0}\par}{\par}
+\newcommand{\qitem}[2]{%
+  \stepcounter{qnum}
+  \par\vspace{0.8em}\noindent
+  {\bfseries \arabic{qnum}. #1}\par
+  \vspace{0.3em}
+  \noindent\textcolor{gy3}{\rule{\linewidth}{0.4pt}}\par
+  \vspace{0.3em}
+  \noindent\textbf{Answer:} #2\par
+}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.55em}

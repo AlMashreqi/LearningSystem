@@ -1,0 +1,7 @@
+[
+  {
+    "front": "{{ONE_CLEAR_RETRIEVAL_QUESTION}}",
+    "back": "{{ANSWER_WITH_CONDITION_AND_DISTINGUISHING_TEST}}",
+    "tags": ["Subject::Unit1", "key"]
+  }
+]

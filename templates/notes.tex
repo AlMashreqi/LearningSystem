@@ -1,0 +1,31 @@
+% Copy into notes-pdf/NN-source-note-slug.tex. Compile from that directory.
+% Replace all authoring tokens, including the provenance comment.
+% Keep boxes short: they cannot split across pages.
+\documentclass[11pt,a4paper]{article}
+\input{preamble.tex}
+\fancyhead[L]{\small {{SUBJECT}}}
+\fancyhead[R]{\small {{SOURCE_NOTE_LABEL}}}
+\begin{document}
+\begin{center}
+  {\LARGE\bfseries {{TITLE}}}\par
+  {{SOURCE_NOTE_LABEL_AND_SCOPED_PAGE_RANGE}}
+\end{center}
+% Source provenance is recorded in RESOURCES.md, not textbook quotation boxes.
+\section{A concrete starting point}
+{{ACCESSIBLE_WORKED_CASE_IN_THE_NOTES_OWN_ORDER}}
+\notebox{The idea in plain words}{
+  {{EXPLANATION_WITH_ALL_TERMS_DEFINED}}
+}
+\section{Complete the reasoning}
+\fillbox{Completing an unfinished section}{
+  {{COMPLETED_DERIVATION_PROOF_OR_ARGUMENT}}
+}
+\examplebox{Try the idea on a new case}{
+  {{ORIGINAL_PROBLEM_AND_FULLY_WORKED_SOLUTION}}
+}
+\keybox{ {{ONE_TAKEAWAY_WITH_ITS_CONDITIONS}} }
+\section{Self-check}
+\begin{selfcheck}
+  \qitem{ {{RETRIEVAL_QUESTION}} }{ {{ANSWER_AND_REASONING}} }
+\end{selfcheck}
+\end{document}

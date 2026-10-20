@@ -1,0 +1,480 @@
+/* ============================================================
+   Source-led study workspace — shared stylesheet
+   Used by every file in ./lessons/ and ./reference/.
+   Tufte-inspired: generous margins, serif text, real sidenotes,
+   and a print stylesheet that produces a clean paper copy.
+   ============================================================ */
+
+:root {
+  --ink:        #1a1a1a;
+  --ink-soft:   #4a4a4a;
+  --ink-faint:  #767676;
+  --rule:       #d8d4cc;
+  --paper:      #fffdf9;
+  --panel:      #f5f2ea;
+  --accent:     #7a2e2e;   /* claret — headings, emphasis */
+  --accent-2:   #1f4e5f;   /* teal  — definitions, links */
+  --good:       #2f6b3f;
+  --bad:        #9c3025;
+  --warn-bg:    #fdf6e3;
+  --warn-edge:  #c9a227;
+  --target-bg:  #fff3b0;
+  --target-edge:#e0ad0f;
+
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+  --sans:  "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --mono:  "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ink:      #e8e4dc;
+    --ink-soft: #b9b4aa;
+    --ink-faint:#8d8880;
+    --rule:     #3a3733;
+    --paper:    #16150f;
+    --panel:    #201e18;
+    --accent:   #e08b7d;
+    --accent-2: #7fc4d8;
+    --good:     #7fc98f;
+    --bad:      #e8897c;
+    --warn-bg:  #2a2413;
+    --warn-edge:#8a7420;
+    --target-bg:  #4a3c00;
+    --target-edge:#c99a12;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html { font-size: 17px; }
+
+body {
+  font-family: var(--serif);
+  color: var(--ink);
+  background: var(--paper);
+  line-height: 1.62;
+  margin: 0;
+  padding: 4rem 1.5rem 8rem;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap { max-width: 44rem; margin: 0 auto; }
+
+/* ---------- masthead ---------- */
+
+.masthead {
+  border-bottom: 2px solid var(--accent);
+  padding-bottom: 1rem;
+  margin-bottom: 2.5rem;
+}
+.eyebrow {
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin: 0 0 0.5rem;
+}
+h1 {
+  font-size: 2.1rem;
+  line-height: 1.18;
+  margin: 0 0 0.4rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.standfirst {
+  font-size: 1.05rem;
+  color: var(--ink-soft);
+  font-style: italic;
+  margin: 0;
+}
+
+h2 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 3rem 0 0.9rem;
+  color: var(--accent);
+  letter-spacing: -0.005em;
+}
+h3 {
+  font-size: 1.08rem;
+  font-weight: 600;
+  margin: 2rem 0 0.6rem;
+  font-family: var(--sans);
+}
+
+p { margin: 0 0 1.1rem; }
+
+a { color: var(--accent-2); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+a:hover { text-decoration-style: dotted; }
+
+/* ---------- the numbered step spine ---------- */
+
+.step {
+  counter-increment: step;
+  position: relative;
+  padding-left: 2.6rem;
+  margin: 2rem 0;
+}
+.step::before {
+  content: counter(step);
+  position: absolute;
+  left: 0; top: 0.05rem;
+  width: 1.75rem; height: 1.75rem;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--paper);
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
+}
+.steps { counter-reset: step; }
+
+/* ---------- boxes ---------- */
+/* ---------- plain-words box: simplified explanation after a source quote ---------- */
+
+.sourcequote {
+  margin: 1.3rem 0;
+  border-left: 3px solid var(--accent);
+  padding: 0.2rem 0 0.2rem 1.1rem;
+  color: var(--ink-soft);
+}
+.sourcequote cite { display: block; font: 0.8rem var(--sans); }
+.sourcequote > :last-child { margin-bottom: 0; }
+.recall blockquote { margin: 0.6rem 0; }
+
+.plain {
+  background: color-mix(in srgb, var(--accent-2) 8%, var(--panel));
+  border-left: 3px solid var(--accent-2);
+  border-radius: 3px;
+  padding: 1rem 1.2rem;
+  margin: 0 0 1.3rem;
+  font-size: 0.98rem;
+}
+.plain .box-label { color: var(--accent-2); }
+.plain > :last-child { margin-bottom: 0; }
+
+/* ---------- recall sidebar: inline recap of an earlier lesson's concept ---------- */
+
+.recall {
+  float: right;
+  clear: right;
+  width: 13.5rem;
+  margin: 0.2rem 0 1rem 1.4rem;
+  padding: 0.85rem 1rem;
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+.recall .box-label {
+  font-size: 0.66rem;
+  margin-bottom: 0.4rem;
+}
+.recall p { margin: 0 0 0.5rem; }
+.recall a { font-size: 0.8rem; }
+.recall > :last-child { margin-bottom: 0; }
+@media (max-width: 40rem) {
+  .recall { float: none; width: auto; margin: 1rem 0; }
+}
+
+
+.box {
+  border: 1px solid var(--rule);
+  background: var(--panel);
+  border-radius: 3px;
+  padding: 1.1rem 1.3rem;
+  margin: 1.6rem 0;
+}
+.box > :last-child { margin-bottom: 0; }
+.box-label {
+  font-family: var(--sans);
+  font-size: 0.68rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin: 0 0 0.5rem;
+  font-weight: 600;
+}
+
+.rule-box {
+  border: none;
+  border-left: 3px solid var(--accent);
+  background: var(--panel);
+  font-size: 1.06rem;
+}
+
+.warn {
+  background: var(--warn-bg);
+  border-left: 3px solid var(--warn-edge);
+  border-top: none; border-right: none; border-bottom: none;
+  border-radius: 0;
+}
+
+.your-notes {
+  border-left: 3px solid var(--accent-2);
+  border-top: none; border-right: none; border-bottom: none;
+  border-radius: 0;
+  background: transparent;
+  padding-left: 1.1rem;
+  font-style: italic;
+  color: var(--ink-soft);
+}
+
+/* ---------- math, done with plain HTML ---------- */
+
+.matrix {
+  display: inline-grid;
+  gap: 0.15rem 0.85rem;
+  font-family: var(--mono);
+  font-size: 0.95rem;
+  font-style: normal;
+  padding: 0.35rem 0.7rem;
+  border-left: 2px solid var(--ink);
+  border-right: 2px solid var(--ink);
+  vertical-align: middle;
+  margin: 0 0.2rem;
+  text-align: center;
+}
+.matrix span { padding: 0.05rem 0; }
+.matrix .pivot {
+  color: var(--accent);
+  font-weight: 700;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border-radius: 2px;
+}
+.matrix .free { color: var(--ink-faint); }
+
+.eq {
+  text-align: center;
+  margin: 1.5rem 0;
+  font-size: 1.05rem;
+}
+.mono { font-family: var(--mono); font-size: 0.93em; }
+
+/* ---------- tables ---------- */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.95rem;
+}
+th, td {
+  text-align: left;
+  padding: 0.55rem 0.7rem;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+}
+th {
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  border-bottom: 1.5px solid var(--ink-soft);
+  font-weight: 600;
+}
+.table-scroll { overflow-x: auto; }
+
+/* ---------- quiz component ---------- */
+
+.quiz { margin: 1.6rem 0; }
+.q {
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 1.1rem 1.2rem;
+  margin-bottom: 1rem;
+  background: var(--panel);
+}
+.q-stem { font-weight: 600; margin: 0 0 0.85rem; }
+.opts { display: grid; gap: 0.45rem; }
+.opt {
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  text-align: left;
+  padding: 0.6rem 0.85rem;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color .12s, background .12s;
+}
+.opt:hover:not([disabled]) { border-color: var(--accent-2); }
+.opt[disabled] { cursor: default; }
+.opt.correct   { border-color: var(--good); background: color-mix(in srgb, var(--good) 14%, var(--paper)); }
+.opt.incorrect { border-color: var(--bad);  background: color-mix(in srgb, var(--bad)  12%, var(--paper)); }
+.fb {
+  margin-top: 0.8rem;
+  font-size: 0.93rem;
+  padding-left: 0.8rem;
+  border-left: 2px solid var(--rule);
+  color: var(--ink-soft);
+}
+.fb:empty { display: none; }
+.fb strong.ok  { color: var(--good); }
+.fb strong.no  { color: var(--bad); }
+
+.score {
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  color: var(--ink-faint);
+  text-align: right;
+}
+
+/* ---------- footer nav ---------- */
+
+.foot {
+  margin-top: 4rem;
+  border-top: 1px solid var(--rule);
+  padding-top: 1.4rem;
+  font-family: var(--sans);
+  font-size: 0.88rem;
+}
+.foot h3 { margin-top: 0; }
+.nextup {
+  background: var(--panel);
+  border-left: 3px solid var(--accent-2);
+  padding: 1rem 1.2rem;
+  margin: 1.5rem 0;
+}
+.ask {
+  font-family: var(--sans);
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+  background: var(--panel);
+  border-radius: 4px;
+  padding: 0.9rem 1.1rem;
+  margin: 2rem 0 0;
+}
+
+kbd {
+  font-family: var(--mono);
+  font-size: 0.85em;
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-bottom-width: 2px;
+  border-radius: 3px;
+  padding: 0.1em 0.35em;
+}
+
+/* ---------- print ---------- */
+
+@media print {
+  :root {
+    --ink: #000; --ink-soft: #333; --ink-faint: #666;
+    --paper: #fff; --panel: #f4f4f4; --rule: #bbb;
+    --accent: #000; --accent-2: #000;
+  }
+  html { font-size: 11.5pt; }
+  body { padding: 0; }
+  .wrap { max-width: none; }
+  a { color: #000; text-decoration: none; }
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.75em; color: #666; word-break: break-all;
+  }
+  .quiz, .ask, .opt { break-inside: avoid; }
+  .opt { background: #fff; }
+  h2, h3 { break-after: avoid; }
+  .box, .q, table { break-inside: avoid; }
+}
+
+/* deep-linked statements land with breathing room, not flush at the viewport edge */
+[id] { scroll-margin-top: 1.5rem; }
+
+/* the specific statement a citation points to — highlighted whenever this
+   page is loaded (or scrolled) with a matching #id in the URL, including
+   inside a ref-preview iframe. Pure CSS :target, no JS reaching across
+   frames required. */
+:target {
+  background: var(--target-bg) !important;
+  outline: 2px solid var(--target-edge);
+  outline-offset: 3px;
+  border-radius: 3px;
+  animation: ref-target-flash 1.8s ease-out 1;
+}
+@keyframes ref-target-flash {
+  0%   { outline-width: 5px; }
+  100% { outline-width: 2px; }
+}
+
+/* table rows can't take outline/border-radius cleanly under most browsers'
+   table rendering -- background-only highlight for a targeted <tr> */
+tr:target {
+  outline: none;
+  animation: none;
+  box-shadow: inset 0 0 0 9999px var(--target-bg);
+}
+
+/* ============================================================
+   Hover-preview cards for cross-lesson citation links (a.ref).
+   Paired with assets/ref-preview.js. Card is injected into <body>
+   by the script, not present in the markup, so it is styled here
+   as a floating overlay regardless of where in the DOM it lands.
+   ============================================================ */
+
+a.ref {
+  text-decoration-style: dotted;
+  text-underline-offset: 3px;
+}
+
+/* ---------- ref-card: a 9:16 window showing the WHOLE cited page,
+   scrolled and highlighted (via :target) to the exact statement.
+   Lives in the left/right margin only — never below the text column.
+   ---------- */
+
+.ref-card {
+  position: fixed;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.22);
+  overflow: hidden;
+}
+.ref-card[hidden] { display: none; }
+
+.ref-card .rc-bar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.45rem 0.65rem;
+  background: var(--panel);
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  color: var(--ink-soft);
+}
+.ref-card .rc-bar a {
+  font-size: 0.72rem;
+  color: var(--accent-2);
+  white-space: nowrap;
+}
+
+.ref-card .rc-frame-wrap {
+  flex: 1 1 auto;
+  position: relative;
+  min-height: 0;
+}
+.ref-card iframe.ref-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: var(--paper);
+}
+
+@media print {
+  .ref-card { display: none !important; }
+}
