@@ -5,38 +5,43 @@ the concrete-first method, source fidelity, retrieval, evidence-based progress,
 linked HTML lessons, grayscale source-note explainers and flashcards. It contains
 no original course notes, textbooks, learner history or subject-specific lessons.
 
-## Install Codex first
+## Set up the workshop
 
-Download or clone this repository and extract it if you downloaded a ZIP. Use the
-installer for your operating system before starting a subject:
+Install Git separately if it is not already available. On macOS, run
+`xcode-select --install` in Terminal and complete the Apple prompt. On Windows,
+install Git from [git-scm.com](https://git-scm.com/install/windows) or run
+`winget install --id Git.Git -e --source winget` in PowerShell. Git is needed to
+clone the repository; the setup scripts below do not install Git.
 
-- **macOS:** open Terminal, change to this repository's folder (for example,
-  `cd ~/Downloads/LearningSystem`), then run [install-codex.sh](install-codex.sh):
+Clone this repository:
 
-  ```sh
-  bash install-codex.sh
-  ```
+```sh
+git clone https://github.com/AlMashreqi/LearningSystem.git
+cd LearningSystem
+```
 
-- **Windows:** double-click [install-codex.bat](install-codex.bat) in File Explorer.
-  You can also open PowerShell in this repository's folder and run:
+Then run the one setup script for your system:
 
-  ```powershell
-  .\install-codex.bat
-  ```
+- **macOS:** run [install-workshop.sh](install-workshop.sh) with `bash install-workshop.sh`.
+- **Windows:** double-click [install-workshop.bat](install-workshop.bat), or run
+  `.\install-workshop.bat` from PowerShell.
 
-Run the installer from your normal user account, without `sudo` or **Run as
-administrator**. Follow its prompts to install Codex and sign in. Internet access
-is required; the scripts keep an existing working Codex installation.
+The setup script installs Python 3.9+ and then Codex, keeping working
+installations. If Python is missing, it installs Python 3.13.16 from Python.org;
+Codex comes from the official OpenAI installer. Run the script from your normal
+user account; do not use `sudo` or **Run as administrator**. Internet access is
+required.
 
-The installers create a separate `Codex-Workshop` folder and offer to open Codex
-there. To use this study kit, continue with the steps below and launch Codex inside
-your new subject folder. If `codex` is not found after installation, close and
-reopen your terminal.
+On macOS, the Python installer opens its standard installer window. Complete it
+and return to the setup terminal. The setup creates a `Codex-Workshop` folder and
+offers to open Codex there. To use repo-specific instructions and skills, launch
+Codex from your new subject folder as described below.
 
 ## Start a subject
 
-Keep this folder as a clean kit. With Python 3.9+ installed, run this from inside
-it (on Windows, use `python` if `python3` is unavailable):
+Keep this folder as a clean kit. Python 3.9+ is required for the study commands.
+After running the workshop setup, run this from inside the kit (on Windows, use
+`python` if `python3` is unavailable):
 
 ```sh
 python3 scripts/study.py init ../economics-study --subject "Economics"
@@ -77,6 +82,7 @@ AGENTS.md / agent.md        Agent instructions and alternate entry point
 assets/                    Shared styling, retrieval quiz, statement hover previews
 templates/                 Workspace records, lesson, recall, reference, TeX, cards
 scripts/study.py            Init, HTML checks, Anki export, PDF compilation
+install-workshop.sh/.bat    Python and Codex setup for macOS and Windows
 tests/                     Standard-library regression tests
 evals/                     Cross-subject prompts for optional teaching review
 ```
