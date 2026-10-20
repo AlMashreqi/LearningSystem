@@ -7,35 +7,76 @@ no original course notes, textbooks, learner history or subject-specific lessons
 
 ## Set up the workshop
 
-Install Git separately if it is not already available. On macOS, run
-`xcode-select --install` in Terminal and complete the Apple prompt. On Windows,
-install Git from [git-scm.com](https://git-scm.com/install/windows) or run
-`winget install --id Git.Git -e --source winget` in PowerShell. Git is needed to
-clone the repository; the setup scripts below do not install Git.
+You do not need to install Git, Python, Node.js/npm or Codex beforehand. The setup
+script installs missing tools for you.
 
-Clone this repository:
+### Quick setup commands
 
-```sh
-git clone https://github.com/AlMashreqi/LearningSystem.git
-cd LearningSystem
+These commands download and immediately run the setup script from GitHub. Review
+and trust the script before running it. Use your normal account, not an elevated
+terminal.
+
+**Windows — Command Prompt (not PowerShell):**
+
+```cmd
+curl.exe -fL "https://raw.githubusercontent.com/AlMashreqi/LearningSystem/refs/heads/master/install-workshop.bat" -o "%TEMP%\install-workshop.bat" && call "%TEMP%\install-workshop.bat"
 ```
 
-Then run the one setup script for your system:
+**macOS — Terminal (without `sudo`):**
 
-- **macOS:** run [install-workshop.sh](install-workshop.sh) with `bash install-workshop.sh`.
-- **Windows:** double-click [install-workshop.bat](install-workshop.bat), or run
-  `.\install-workshop.bat` from PowerShell.
+```bash
+curl -fL "https://raw.githubusercontent.com/AlMashreqi/LearningSystem/refs/heads/master/install-workshop.sh" -o "$TMPDIR/install-workshop.sh" && bash "$TMPDIR/install-workshop.sh"
+```
 
-The setup script installs Python 3.9+ and then Codex, keeping working
-installations. If Python is missing, it installs Python 3.13.16 from Python.org;
-Codex comes from the official OpenAI installer. Run the script from your normal
-user account; do not use `sudo` or **Run as administrator**. Internet access is
-required.
+These commands install the tools only; download and extract the kit below to get
+the study pipeline, instructions and templates.
 
-On macOS, the Python installer opens its standard installer window. Complete it
-and return to the setup terminal. The setup creates a `Codex-Workshop` folder and
-offers to open Codex there. To use repo-specific instructions and skills, launch
-Codex from your new subject folder as described below.
+### Download the kit (or run setup manually)
+
+1. [Download the workshop ZIP](https://github.com/AlMashreqi/LearningSystem/archive/refs/heads/master.zip)
+   (or choose **Code → Download ZIP** on GitHub).
+2. Extract the ZIP: on macOS, double-click it; on Windows, right-click it and choose
+   **Extract All**. Open the extracted `LearningSystem-master` folder.
+3. Run the setup script for your system:
+   - **macOS:** open Terminal, type `bash` followed by a space, drag
+     `install-workshop.sh` from the extracted folder into Terminal, then press Enter.
+   - **Windows:** double-click `install-workshop.bat` inside the extracted folder.
+     Do not run it from inside the ZIP.
+
+The scripts keep working installations and set up:
+
+| Tool | When missing |
+|---|---|
+| Git | Apple Command Line Tools on macOS; Git for Windows 2.56.0.2 on Windows |
+| Python 3.9+ | Python 3.13.16 from Python.org |
+| Node.js and npm | Node.js 24.22.0 LTS from nodejs.org, including npm |
+| Codex | The official OpenAI installer |
+| LaTeX (optional) | TinyTeX 2026.10 and the packages used by the PDF template |
+
+Choose **y** at **Set up LaTeX for PDFs now?** to enable the PDF command, or press
+Enter to skip it. TinyTeX is smaller than a full TeX installation but still adds
+download time and disk usage. An existing LaTeX installation is kept and checked
+for the template packages; missing packages must be repaired separately. Node/npm
+and Git support workshop coding tasks, but the study scripts themselves use only
+Python's standard library.
+
+Run setup from your normal user account, without `sudo` or **Run as administrator**.
+Internet access and an operating system supported by the downloaded tools are
+required. On macOS, complete the Apple, Python and Node.js installer windows when
+they appear, then return to Terminal. On Windows, complete the Node.js installer
+when it opens. Some installers require an administrator's approval; managed college
+machines may need IT assistance. Reopen your terminal after setup for PATH changes
+to take effect. Codex sign-in requires an account with Codex access.
+
+The setup creates a `Codex-Workshop` folder and offers to open Codex there. To use
+repo-specific instructions and skills, launch Codex from your new subject folder
+as described below.
+
+Installer downloads for Python, Node.js, Git for Windows and TinyTeX use pinned
+versions with SHA-256 checks. Maintainers must update both the version and checksum
+when upgrading them. Codex uses OpenAI's current installer. Test setup on clean
+macOS and Windows machines before a workshop; offline regression tests do not
+exercise real installations or operating-system permission prompts.
 
 ## Start a subject
 
@@ -82,7 +123,7 @@ AGENTS.md / agent.md        Agent instructions and alternate entry point
 assets/                    Shared styling, retrieval quiz, statement hover previews
 templates/                 Workspace records, lesson, recall, reference, TeX, cards
 scripts/study.py            Init, HTML checks, Anki export, PDF compilation
-install-workshop.sh/.bat    Python and Codex setup for macOS and Windows
+install-workshop.sh/.bat    Git, Python, Node/npm, Codex setup; optional LaTeX
 tests/                     Standard-library regression tests
 evals/                     Cross-subject prompts for optional teaching review
 ```
@@ -157,7 +198,8 @@ are not saved as learning evidence automatically.
 - **HTML:** a modern browser. No external fonts, CDN, framework or math renderer.
   Plain HTML/Unicode handles simple notation; add an appropriate local renderer
   if your subject needs complex mathematical typesetting.
-- **PDF:** optional `pdflatex` and packages listed in `templates/preamble.tex`.
+- **PDF:** optional `pdflatex` and packages listed in `templates/preamble.tex`;
+  choose LaTeX during workshop setup to install TinyTeX and these packages.
   Check packages with `kpsewhich`; do not assume a specific machine's TeX setup.
   The Latin Modern template is Latin-script oriented; other scripts may need
   Unicode TeX/fonts or browser printing. The CLI supports pdfLaTeX only.

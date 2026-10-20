@@ -1,0 +1,108 @@
+"""Offline macOS installer checks; no real downloads or installations."""
+import os
+from pathlib import Path
+import sys
+import subprocess
+import tempfile
+import unittest
+
+KIT = Path(__file__).resolve().parents[1]
+
+
+@unittest.skipUnless(sys.platform == "darwin", "macOS shell installer tests")
+class WorkshopTests(unittest.TestCase):
+    def run_setup(self, *, missing=(), answers="n\nn\n", bad_checksum=False,
+                  latex=False, missing_package=False, incomplete_tex=False):
+        with tempfile.TemporaryDirectory(prefix="workshop test ") as directory:
+            root = Path(directory)
+            bin_dir = root / "bin"
+            bin_dir.mkdir()
+            log = root / "calls"
+            def stub(name, body):
+                path = bin_dir / name
+                if path.is_symlink():
+                    path.unlink()
+                path.write_text("#!/bin/bash\n" + body + "\n")
+                path.chmod(0o755)
+            stub("uname", 'if [[ "$1" == -m ]]; then echo arm64; else echo Darwin; fi')
+            for name in ("git", "python3", "node", "npm", "codex"):
+                if name not in missing:
+                    stub(name, f'echo "{name} version"; echo {name} >> "$CALL_LOG"')
+            if latex:
+                stub("pdflatex", 'echo pdflatex >> "$CALL_LOG"')
+                stub("kpsewhich", 'exit 1' if missing_package else 'echo found')
+            if incomplete_tex:
+                (root / "Library/TinyTeX").mkdir(parents=True)
+            # Only expose explicitly allowed commands, never real installers.
+            for name in ("mkdir", "chmod", "mktemp", "rm", "awk", "shasum"):
+                (bin_dir / name).symlink_to(Path("/usr/bin" if name in ("mktemp", "awk", "shasum") else "/bin") / name)
+            stub("curl", 'echo download >> "$CALL_LOG"; exit 97')
+            stub("open", 'echo open >> "$CALL_LOG"; exit 98')
+            stub("xcode-select", 'echo xcode >> "$CALL_LOG"; exit 0')
+            if bad_checksum:
+                stub("curl", 'echo download >> "$CALL_LOG"; exit 0')
+                stub("shasum", 'echo "wrong-checksum  installer"')
+            import pty
+            master, slave = pty.openpty()
+            try:
+                process = subprocess.Popen(
+                    ["/bin/bash", str(KIT / "install-workshop.sh")], stdin=slave,
+                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                    env={**os.environ, "HOME": str(root), "PATH": str(bin_dir),
+                         "CALL_LOG": str(log), "BASH_ENV": "/dev/null", "CODEX_INSTALL_DIR": str(bin_dir)})
+                os.write(master, answers.encode())
+                output, _ = process.communicate(timeout=10)
+            finally:
+                os.close(master)
+                os.close(slave)
+            return process.returncode, output.decode(), log.read_text() if log.exists() else ""
+
+    def test_existing_tools_are_checked_without_downloads_and_latex_can_be_declined(self):
+        code, output, calls = self.run_setup()
+        self.assertEqual(code, 0, output)
+        for tool in ("git", "python3", "node", "npm", "codex"):
+            self.assertIn(tool, calls)
+        self.assertNotIn("download", calls)
+        self.assertIn("Skipping", output)
+
+    def test_missing_git_requests_apple_tools_and_stops_if_not_completed(self):
+        code, output, calls = self.run_setup(missing=("git",))
+        self.assertNotEqual(code, 0, output)
+        self.assertIn("xcode", calls)
+        self.assertNotIn("download", calls)
+
+    def test_missing_node_stops_on_checksum_mismatch_without_opening_installer(self):
+        code, output, calls = self.run_setup(missing=("node", "npm"), bad_checksum=True)
+        self.assertNotEqual(code, 0, output)
+        self.assertIn("download", calls)
+        self.assertIn("checksum", output.lower())
+        self.assertNotIn("open", calls)
+
+    def test_existing_latex_is_checked_without_installing_or_changing_packages(self):
+        code, output, calls = self.run_setup(latex=True, answers="y\nn\n")
+        self.assertEqual(code, 0, output)
+        self.assertIn("pdflatex", calls)
+        self.assertIn("template packages are ready", output)
+        self.assertNotIn("download", calls)
+
+    def test_existing_latex_with_missing_template_packages_is_not_reported_ready(self):
+        code, output, calls = self.run_setup(latex=True, missing_package=True, answers="y\n")
+        self.assertNotEqual(code, 0, output)
+        self.assertIn("Missing LaTeX package", output)
+        self.assertNotIn("download", calls)
+
+    def test_incomplete_tinytex_is_not_overwritten(self):
+        code, output, calls = self.run_setup(incomplete_tex=True, answers="y\n")
+        self.assertNotEqual(code, 0, output)
+        self.assertIn("not overwritten", output)
+        self.assertNotIn("download", calls)
+
+    def test_optional_latex_download_stops_before_extraction_on_checksum_mismatch(self):
+        code, output, calls = self.run_setup(bad_checksum=True, answers="y\n")
+        self.assertNotEqual(code, 0, output)
+        self.assertIn("checksum", output.lower())
+        self.assertIn("download", calls)
+
+
+if __name__ == "__main__":
+    unittest.main()

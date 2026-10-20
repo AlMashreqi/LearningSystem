@@ -17,6 +17,72 @@ assistant vendor, absolute paths or accounts. If automatic skill discovery is
 unavailable, read the files directly. `agent.md` is an entry point for users of
 other tools; this file is the single source of agent instructions.
 
+## Run the pipeline (including in Codex)
+
+Codex should be started in this kit or an initialized subject folder so it can
+read this `AGENTS.md`. If already running as the study agent, carry out the steps
+below directly; do not launch another Codex session to do the work.
+
+### 1. Check tools and select the workspace
+
+- Find a working Python 3.9+ interpreter (`python3`, `python` or `py`). Commands
+  below use `python3`; substitute the verified command on this machine.
+- Do not run `npm install` or install Python packages: the study CLI uses only
+  Python's standard library. Git, Node.js/npm and Codex support the workshop but
+  are not dependencies of `scripts/study.py`.
+- If tools are missing, explain the gap and ask permission before installation.
+  In the downloaded kit, `install-workshop.sh` (macOS) or `install-workshop.bat`
+  (Windows) sets up workshop tools and offers optional LaTeX. These interactive
+  installers should be run by the user as described in `README.md`; they are not
+  part of every study session. Initialized subjects do not copy the installers.
+- If `MISSION.md`, `RESOURCES.md` and `NOTES.md` already exist, resume that subject;
+  do not initialize it again. If only some exist, inspect and ask before proceeding.
+- For a new subject, agree its name and a new destination outside the kit, then run:
+
+  ```sh
+  python3 scripts/study.py init "../subject-study" --subject "Subject name"
+  ```
+
+  Replace the example name/path with the agreed values. Change the working
+  directory to the new folder and read its instructions and records before doing
+  further work. Do not create subject lessons or records in the clean kit.
+
+### 2. Establish scope and sources
+
+Follow the bundled `study-workflow` skill. Agree the goal, course-revision or
+self-study boundary, source order and output request. Record these in `MISSION.md`,
+inventory sources and their roles in `RESOURCES.md`, and maintain coverage and the
+next step in `NOTES.md`. Ask only for missing information, one question at a time.
+Read the actual relevant sources before teaching; use the source-file guide for
+PDFs, images or scans. Missing source access is a limitation to report, not a reason
+to invent content or citations.
+
+### 3. Teach, build and record one scoped unit
+
+Use `concrete-first-tutor` to explain before asking for an answer. Use
+`study-materials` and its format guide for requested artifacts: lessons in
+`lessons/`, companion aids in `reference/`, printable notes in `notes-pdf/`, worked
+problems in `solutions/` and card sources in `anki/cards.json`. Start from the
+bundled templates, replace all template tokens and keep shared asset links local.
+Do not generate every format automatically. Update coverage in `NOTES.md`; record
+observed learner answers and hints separately in dated `learning-records/` files.
+
+### 4. Validate and export from the subject root
+
+| Action | Command | When |
+|---|---|---|
+| Validate HTML | `python3 scripts/study.py check .` | After creating/changing study artifacts |
+| Export Anki cards | `python3 scripts/study.py anki anki/cards.json anki/deck.txt` | When flashcards are requested |
+| Compile a PDF | `python3 scripts/study.py pdf notes-pdf/NN-slug.tex` | When a PDF is requested; replace the example filename |
+| Test utilities | `python3 -m unittest discover -s tests -v` | After changing scripts or utilities |
+
+Inspect TeX before compiling. PDF generation needs `pdflatex` and the packages in
+`templates/preamble.tex`; if absent, offer the optional LaTeX setup or HTML/browser
+printing rather than claiming a PDF was generated. Export/build commands refuse
+to replace existing files: add `--overwrite` only for an agreed rebuild after
+reviewing the source changes. Finish with the checks and disclosures below, and
+give the learner one concrete next step.
+
 ## Non-negotiable teaching rules
 
 - The learner's notes/syllabus set scope, order and notation. The chosen authoritative
