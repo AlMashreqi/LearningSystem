@@ -19,14 +19,30 @@ terminal.
 **Windows — PowerShell (without administrator privileges):**
 
 ```powershell
-$installer = Join-Path $env:TEMP 'install-workshop.bat'
+$installer = Join-Path $env:TEMP ('install-workshop-' + [guid]::NewGuid().ToString('N') + '.bat')
+$url = 'https://raw.githubusercontent.com/AlMashreqi/LearningSystem/refs/heads/master/install-workshop.bat'
+[Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
 try {
-    Invoke-WebRequest -UseBasicParsing -Uri 'https://raw.githubusercontent.com/AlMashreqi/LearningSystem/refs/heads/master/install-workshop.bat' -OutFile $installer -ErrorAction Stop
+    if (Get-Command curl.exe -ErrorAction SilentlyContinue) {
+        & curl.exe --fail --location --retry 3 --retry-delay 2 --connect-timeout 20 --max-time 180 --output $installer $url
+        if ($LASTEXITCODE -ne 0) { throw 'Download failed. Check your internet connection or proxy; setup was not run.' }
+    } else {
+        Invoke-WebRequest -UseBasicParsing -Uri $url -OutFile $installer -TimeoutSec 180 -ErrorAction Stop
+    }
+    if ((Get-Item -LiteralPath $installer -ErrorAction Stop).Length -eq 0) { throw 'Downloaded installer is empty; setup was not run.' }
     & $installer
-} catch {
-    throw
+    if ($LASTEXITCODE -ne 0) { throw "Workshop setup failed (exit code $LASTEXITCODE). See the error above." }
+} finally {
+    Remove-Item -LiteralPath $installer -Force -ErrorAction SilentlyContinue
 }
 ```
+
+Paste the entire block into PowerShell. It enables TLS 1.2 for this session,
+prefers Windows' `curl.exe` with download retries, and falls back to PowerShell's
+downloader if curl is unavailable. It never runs a failed or empty download and
+removes its temporary installer afterwards. Certificate verification stays enabled;
+if your network blocks GitHub or an HTTPS-inspecting proxy causes certificate
+errors, ask IT for help rather than disabling verification.
 
 **macOS — Terminal (without `sudo`):**
 
