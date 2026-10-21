@@ -31,8 +31,9 @@ below directly; do not launch another Codex session to do the work.
   Python's standard library. Git, Node.js/npm and Codex support the workshop but
   are not dependencies of `scripts/study.py`.
 - If tools are missing, explain the gap and ask permission before installation.
-  In the downloaded kit, `install-workshop.sh` (macOS) or `install-workshop.bat`
-  (Windows) sets up workshop tools and offers optional LaTeX. These interactive
+  In the downloaded kit, `install-workshop.sh` (macOS),
+  `install-workshop-linux.sh` (Linux) or `install-workshop.bat` (Windows) sets
+  up workshop tools and offers optional LaTeX. These interactive
   installers should be run by the user as described in `README.md`; they are not
   part of every study session. Initialized subjects do not copy the installers.
 - If `MISSION.md`, `RESOURCES.md` and `NOTES.md` already exist, resume that subject;
