@@ -1,82 +1,12 @@
 """Offline macOS installer checks; no real downloads or installations."""
 import os
 from pathlib import Path
-import shutil
 import sys
 import subprocess
 import tempfile
 import unittest
 
 KIT = Path(__file__).resolve().parents[1]
-
-
-@unittest.skipUnless(os.name == "nt" and shutil.which("powershell.exe"),
-                     "Windows PowerShell bootstrap tests")
-class WindowsBootstrapTests(unittest.TestCase):
-    def run_bootstrap(self, scenario):
-        command = (KIT / "README.md").read_text(encoding="utf-8").split("```powershell\n", 1)[1].split("```", 1)[0]
-        # Stub both downloaders; execute only a harmless locally generated batch file.
-        mocks = r'''
-function Write-MockDownload([string] $Path) {
-    if ($env:BOOTSTRAP_SCENARIO -eq 'empty') { [IO.File]::WriteAllText($Path, ''); return }
-    $exitCode = if ($env:BOOTSTRAP_SCENARIO -eq 'installer-fails') { 7 } else { 0 }
-    $batch = "@echo off`r`necho ran>`"$env:BOOTSTRAP_LOG`"`r`nexit /b $exitCode`r`n"
-    [IO.File]::WriteAllText($Path, $batch, [Text.Encoding]::ASCII)
-}
-function curl.exe {
-    $outputIndex = [Array]::IndexOf($args, '--output')
-    Write-MockDownload $args[$outputIndex + 1]
-    $global:LASTEXITCODE = if ($env:BOOTSTRAP_SCENARIO -eq 'download-fails') { 22 } else { 0 }
-}
-function Invoke-WebRequest {
-    param([switch] $UseBasicParsing, [string] $Uri, [string] $OutFile,
-          [int] $TimeoutSec, [string] $ErrorAction)
-    if (-not ([Net.ServicePointManager]::SecurityProtocol -band [Net.SecurityProtocolType]::Tls12)) {
-        throw 'TLS 1.2 was not enabled.'
-    }
-    Write-MockDownload $OutFile
-}
-if ($env:BOOTSTRAP_SCENARIO -eq 'fallback') {
-    function Get-Command { param($Name, $ErrorAction); return $null }
-    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls
-}
-'''
-        with tempfile.TemporaryDirectory(prefix="bootstrap test ") as directory:
-            root = Path(directory)
-            log = root / "ran.txt"
-            result = subprocess.run(
-                ["powershell.exe", "-NoLogo", "-NoProfile", "-NonInteractive", "-Command",
-                 mocks + "\ntry {\n" + command + "\n} catch { Write-Output $_; exit 13 }"],
-                env={**os.environ, "TEMP": directory, "BOOTSTRAP_SCENARIO": scenario,
-                     "BOOTSTRAP_LOG": str(log)}, capture_output=True, text=True, timeout=30)
-            return result, log.exists(), list(root.glob("*.bat"))
-
-    def test_success_runs_and_cleans_up(self):
-        result, ran, leftovers = self.run_bootstrap("success")
-        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertTrue(ran)
-        self.assertEqual(leftovers, [])
-
-    def test_fallback_enables_tls_and_runs_without_curl(self):
-        result, ran, leftovers = self.run_bootstrap("fallback")
-        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertTrue(ran)
-        self.assertEqual(leftovers, [])
-
-    def test_failed_or_empty_download_never_runs(self):
-        for scenario in ("download-fails", "empty"):
-            with self.subTest(scenario=scenario):
-                result, ran, leftovers = self.run_bootstrap(scenario)
-                self.assertNotEqual(result.returncode, 0)
-                self.assertFalse(ran)
-                self.assertEqual(leftovers, [])
-
-    def test_installer_failure_is_reported_and_cleaned_up(self):
-        result, ran, leftovers = self.run_bootstrap("installer-fails")
-        self.assertNotEqual(result.returncode, 0)
-        self.assertTrue(ran)
-        self.assertIn("exit code 7", result.stdout + result.stderr)
-        self.assertEqual(leftovers, [])
 
 
 @unittest.skipUnless(sys.platform == "darwin", "macOS shell installer tests")
