@@ -16,10 +16,16 @@ These commands download and immediately run the setup script from GitHub. Review
 and trust the script before running it. Use your normal account, not an elevated
 terminal.
 
-**Windows — Command Prompt (not PowerShell):**
+**Windows — PowerShell (without administrator privileges):**
 
-```cmd
-curl.exe -fL "https://raw.githubusercontent.com/AlMashreqi/LearningSystem/refs/heads/master/install-workshop.bat" -o "%TEMP%\install-workshop.bat" && call "%TEMP%\install-workshop.bat"
+```powershell
+$installer = Join-Path $env:TEMP 'install-workshop.bat'
+try {
+    Invoke-WebRequest -UseBasicParsing -Uri 'https://raw.githubusercontent.com/AlMashreqi/LearningSystem/refs/heads/master/install-workshop.bat' -OutFile $installer -ErrorAction Stop
+    & $installer
+} catch {
+    throw
+}
 ```
 
 **macOS — Terminal (without `sudo`):**
