@@ -18,7 +18,7 @@ download_checked() {
 }
 
 printf '\nLearningSystem workshop setup | macOS\n\n'
-[[ "$(uname -s)" == Darwin ]] || fail 'This file is for macOS. Use install-workshop.bat on Windows.'
+[[ "$(uname -s)" == Darwin ]] || fail 'This file is for macOS. Use install-workshop-linux.sh on Linux or install-workshop.bat on Windows.'
 [[ "$(uname -m)" == arm64 || "$(uname -m)" == x86_64 ]] || fail 'Use a 64-bit Intel or Apple silicon Mac.'
 [[ "$EUID" -ne 0 ]] || fail 'Run from your own account, without sudo.'
 [[ -t 0 ]] || fail 'Run this script in Terminal so you can answer its prompts.'
