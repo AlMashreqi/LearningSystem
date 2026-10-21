@@ -1,12 +1,70 @@
 """Offline macOS installer checks; no real downloads or installations."""
 import os
 from pathlib import Path
+import shutil
 import sys
 import subprocess
 import tempfile
 import unittest
 
 KIT = Path(__file__).resolve().parents[1]
+
+
+@unittest.skipUnless(os.name == "nt", "requires Windows Command Prompt/PowerShell")
+class WindowsWorkshopTests(unittest.TestCase):
+    @unittest.skipUnless(shutil.which("curl.exe"), "requires Windows curl.exe")
+    def test_cmd_download_gate_and_installer_exit_code(self):
+        command = (KIT / "README.md").read_text(encoding="utf-8").split("```cmd\n", 1)[1].split("```", 1)[0].strip()
+        url = "https://raw.githubusercontent.com/AlMashreqi/LearningSystem/refs/heads/master/install-workshop.bat"
+        for scenario in ("success", "download-fails", "installer-fails"):
+            with self.subTest(scenario=scenario), tempfile.TemporaryDirectory(prefix="cmd test ") as directory:
+                root = Path(directory)
+                log = root / "ran.txt"
+                source = root / "source.bat"
+                code = 7 if scenario == "installer-fails" else 0
+                if scenario != "download-fails":
+                    source.write_bytes(f'@echo off\r\necho ran>"%WORKSHOP_TEST_LOG%"\r\nexit /b {code}\r\n'.encode("ascii"))
+                # Even a leftover installer must not run after a failed download.
+                (root / "install-workshop.bat").write_bytes(b'@echo off\r\necho stale>"%WORKSHOP_TEST_LOG%"\r\n')
+                result = subprocess.run(
+                    'cmd.exe /d /s /c "' + command.replace(url, source.as_uri()) + '"',
+                    env={**os.environ, "TEMP": directory, "WORKSHOP_TEST_LOG": str(log)},
+                    capture_output=True, timeout=30)
+                if scenario == "download-fails":
+                    self.assertNotEqual(result.returncode, 0)
+                    self.assertFalse(log.exists())
+                else:
+                    self.assertEqual(result.returncode, code, result.stdout + result.stderr)
+                    self.assertEqual(log.read_text().strip(), "ran")
+
+    @unittest.skipUnless(shutil.which("powershell.exe"), "requires Windows PowerShell")
+    def test_codex_child_enables_tls_and_propagates_failure(self):
+        for exit_code in (0, 7):
+            with self.subTest(exit_code=exit_code), tempfile.TemporaryDirectory(prefix="TLS test ") as directory:
+                installer = Path(directory) / "installer's mock.ps1"
+                installer.write_text(
+                    "if (-not ([Net.ServicePointManager]::SecurityProtocol -band [Net.SecurityProtocolType]::Tls12)) { throw 'TLS missing' }; "
+                    f"Write-Output 'TLS_OK'; exit {exit_code}", encoding="ascii")
+                # Load only the helper's AST, never the actual installer's main body.
+                harness = r'''
+$tokens = $null; $errors = $null
+$text = [IO.File]::ReadAllText($env:SETUP_SOURCE)
+$ast = [Management.Automation.Language.Parser]::ParseInput($text.Substring($text.IndexOf('# WORKSHOP_POWERSHELL')), [ref]$tokens, [ref]$errors)
+if ($errors.Count) { throw 'Installer syntax error' }
+$helper = $ast.Find({ param($node) $node -is [Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -eq 'Invoke-CodexInstaller' }, $true)
+if (-not $helper) { throw 'Missing Codex launch helper' }
+. ([scriptblock]::Create($helper.Extent.Text))
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls
+try { Invoke-CodexInstaller $env:MOCK_INSTALLER; exit 0 } catch { Write-Output $_; exit 1 }
+'''
+                result = subprocess.run(
+                    ["powershell.exe", "-NoLogo", "-NoProfile", "-NonInteractive", "-Command", harness],
+                    env={**os.environ, "SETUP_SOURCE": str(KIT / "install-workshop.bat"),
+                         "MOCK_INSTALLER": str(installer)}, capture_output=True, text=True, timeout=30)
+                self.assertIn("TLS_OK", result.stdout, result.stderr)
+                self.assertEqual(result.returncode, 0 if exit_code == 0 else 1, result.stdout + result.stderr)
+                if exit_code:
+                    self.assertIn("exit code 7", result.stdout)
 
 
 @unittest.skipUnless(sys.platform == "darwin", "macOS shell installer tests")

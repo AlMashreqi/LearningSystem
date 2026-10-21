@@ -34,6 +34,14 @@ function Refresh-Path {
         [Environment]::GetEnvironmentVariable('Path', 'User') + ';' + $env:PATH
 }
 
+function Invoke-CodexInstaller([string] $Path) {
+    # A new PowerShell process does not inherit the parent's .NET TLS settings.
+    $escapedPath = $Path.Replace("'", "''")
+    $command = "`$ErrorActionPreference='Stop'; [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12; & '$escapedPath'"
+    & powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -Command $command
+    if ($LASTEXITCODE -ne 0) { throw "The official Codex installer failed (exit code $LASTEXITCODE)." }
+}
+
 function Test-Python39([string] $Name) {
     $command = Get-Command $Name -ErrorAction SilentlyContinue
     if (-not $command -or -not $command.Source) { return $false }
@@ -133,8 +141,7 @@ try {
         [void][Management.Automation.Language.Parser]::ParseFile($codexInstaller, [ref]$tokens, [ref]$parseErrors)
         if ($parseErrors.Count -gt 0) { throw 'The downloaded Codex installer is not valid PowerShell.' }
         $env:CODEX_NON_INTERACTIVE = '1'
-        & powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File $codexInstaller
-        if ($LASTEXITCODE -ne 0) { throw 'The official Codex installer failed.' }
+        Invoke-CodexInstaller $codexInstaller
         $codexPath = Join-Path $codexBin 'codex.exe'
         if (-not (Test-Path -LiteralPath $codexPath -PathType Leaf)) { throw 'Codex was not found after installation. Reopen this terminal and rerun setup.' }
         & $codexPath --version
