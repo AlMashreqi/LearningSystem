@@ -32,6 +32,16 @@ GitHub or a proxy causes certificate errors, ask IT rather than disabling verifi
 curl -fL "https://raw.githubusercontent.com/AlMashreqi/LearningSystem/refs/heads/master/install-workshop.sh" -o "$TMPDIR/install-workshop.sh" && bash "$TMPDIR/install-workshop.sh"
 ```
 
+**Linux — Terminal:**
+
+```bash
+curl -fL --retry 3 --connect-timeout 20 --max-time 180 "https://raw.githubusercontent.com/AlMashreqi/LearningSystem/refs/heads/master/install-workshop-linux.sh" -o "${TMPDIR:-/tmp}/install-workshop-linux.sh" && bash "${TMPDIR:-/tmp}/install-workshop-linux.sh"
+```
+
+The Linux setup supports `apt`, `dnf`, `pacman` and `zypper` distributions. It
+uses `sudo` only when it needs to install missing system packages; Codex installs
+for the current user. Review the script before running it.
+
 These commands install the tools only; download and extract the kit below to get
 the study pipeline, instructions and templates.
 
@@ -46,21 +56,23 @@ the study pipeline, instructions and templates.
      `install-workshop.sh` from the extracted folder into Terminal, then press Enter.
    - **Windows:** double-click `install-workshop.bat` inside the extracted folder.
      Do not run it from inside the ZIP.
+   - **Linux:** run `bash install-workshop-linux.sh` in a terminal from the extracted folder.
 
 The scripts keep working installations and set up:
 
 | Tool | When missing |
 |---|---|
-| Git | Apple Command Line Tools on macOS; Git for Windows 2.56.0.2 on Windows |
-| Python 3.9+ | Python 3.13.16 from Python.org |
-| Node.js and npm | Node.js 24.22.0 LTS from nodejs.org, including npm |
+| Git | Apple Command Line Tools on macOS; Git for Windows 2.56.0.2 on Windows; distribution package on Linux |
+| Python 3.9+ | Python 3.13.16 from Python.org on macOS/Windows; distribution package on Linux |
+| Node.js and npm | Node.js 24.22.0 LTS from nodejs.org on macOS/Windows; distribution package on Linux |
 | Codex | The official OpenAI installer |
-| LaTeX (optional) | TinyTeX 2026.10 and the packages used by the PDF template |
+| LaTeX (optional) | TinyTeX 2026.10 on macOS/Windows; TeX Live packages from the Linux distribution |
 
 Choose **y** at **Set up LaTeX for PDFs now?** to enable the PDF command, or press
 Enter to skip it. TinyTeX is smaller than a full TeX installation but still adds
-download time and disk usage. An existing LaTeX installation is kept and checked
-for the template packages; missing packages must be repaired separately. Node/npm
+download time and disk usage. Linux installs TeX Live packages through its system
+package manager. An existing LaTeX installation is kept and checked for the
+template packages; missing packages must be repaired separately. Node/npm
 and Git support workshop coding tasks, but the study scripts themselves use only
 Python's standard library.
 
@@ -68,7 +80,8 @@ Run setup from your normal user account, without `sudo` or **Run as administrato
 Internet access and an operating system supported by the downloaded tools are
 required. On macOS, complete the Apple, Python and Node.js installer windows when
 they appear, then return to Terminal. On Windows, complete the Node.js installer
-when it opens. Some installers require an administrator's approval; managed college
+when it opens. On Linux, the supported package manager may prompt for your sudo
+password. Some installers require an administrator's approval; managed college
 machines may need IT assistance. Reopen your terminal after setup for PATH changes
 to take effect. Codex sign-in requires an account with Codex access.
 
@@ -79,7 +92,7 @@ as described below.
 Installer downloads for Python, Node.js, Git for Windows and TinyTeX use pinned
 versions with SHA-256 checks. Maintainers must update both the version and checksum
 when upgrading them. Codex uses OpenAI's current installer. Test setup on clean
-macOS and Windows machines before a workshop; offline regression tests do not
+macOS, Windows and Linux machines before a workshop; offline regression tests do not
 exercise real installations or operating-system permission prompts.
 
 ## Start a subject
@@ -127,7 +140,7 @@ AGENTS.md / agent.md        Agent instructions and alternate entry point
 assets/                    Shared styling, retrieval quiz, statement hover previews
 templates/                 Workspace records, lesson, recall, reference, TeX, cards
 scripts/study.py            Init, HTML checks, Anki export, PDF compilation
-install-workshop.sh/.bat    Git, Python, Node/npm, Codex setup; optional LaTeX
+install-workshop*           Git, Python, Node/npm, Codex setup; optional LaTeX
 tests/                     Standard-library regression tests
 evals/                     Cross-subject prompts for optional teaching review
 ```
@@ -203,7 +216,8 @@ are not saved as learning evidence automatically.
   Plain HTML/Unicode handles simple notation; add an appropriate local renderer
   if your subject needs complex mathematical typesetting.
 - **PDF:** optional `pdflatex` and packages listed in `templates/preamble.tex`;
-  choose LaTeX during workshop setup to install TinyTeX and these packages.
+  choose LaTeX during workshop setup to install TinyTeX (macOS/Windows) or the
+  corresponding TeX Live packages (Linux).
   Check packages with `kpsewhich`; do not assume a specific machine's TeX setup.
   The Latin Modern template is Latin-script oriented; other scripts may need
   Unicode TeX/fonts or browser printing. The CLI supports pdfLaTeX only.
